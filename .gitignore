@@ -1,0 +1,29 @@
+# Python
+*.py[cod]
+__pycache__/
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+media/
+
+# Environments
+.env
+venv/
+env/
+ENV/
+venv.bak/
+.env.bak/
+
+# IDEs and editors
+.vscode/
+.idea/
+
+# Sphinx documentation
+docs/_build/

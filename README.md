@@ -1,8 +1,8 @@
-# Django Capstone Project
+#TaskMaster Django Capstone Project
 
 ## Project Description
 
-This is a Django-based web application that serves as the capstone project for a software engineering course. The application provides a set of features and functionalities that showcase the skills and knowledge acquired throughout the course.
+TaskMaster is a feature-rich task management application built using Django. It serves as the capstone project for a comprehensive software engineering course. The application allows users to create, update, and manage their tasks efficiently. Designed with a focus on simplicity and functionality, TaskMaster helps users stay organized and productive. The project showcases expertise in Django, Python, HTML, CSS, and Bootstrap, demonstrating skills in web development and deployment.
 
 ## Features
 

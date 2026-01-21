@@ -1,0 +1,10 @@
+# All production requirements
+-r requirements.txt
+
+# Development only packages
+django-debug-toolbar==4.4.6
+pytest==7.4.3
+pytest-django==4.7.0
+flake8==6.1.0
+black==23.12.1
+coverage==7.6.1

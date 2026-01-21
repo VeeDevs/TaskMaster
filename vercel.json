@@ -1,0 +1,16 @@
+{
+  "buildCommand": "pip install -r requirements.txt && python manage.py collectstatic --noinput",
+  "devCommand": "python manage.py runserver",
+  "framework": "django",
+  "pythonVersion": "3.9",
+  "env": {
+    "DJANGO_SETTINGS_MODULE": "mysite.settings"
+  },
+  "functions": {
+    "api/wsgi.py": {
+      "memory": 3008,
+      "maxDuration": 60
+    }
+  },
+  "outputDirectory": "staticfiles"
+}

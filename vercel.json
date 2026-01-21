@@ -2,7 +2,6 @@
   "buildCommand": "pip install -r requirements.txt && python manage.py collectstatic --noinput",
   "devCommand": "python manage.py runserver",
   "framework": "django",
-  "pythonVersion": "3.9",
   "functions": {
     "api/wsgi.py": {
       "memory": 3008,

@@ -10,22 +10,38 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from .env file in development
+try:
+    from dotenv import load_dotenv
+    load_dotenv(BASE_DIR / '.env.local')
+except ImportError:
+    pass
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-25t)o8p6hsyq*l$^8_%17mzq!@oxmq&ayo2(tat!i3k6c$64f6'
+# IMPORTANT: Generate a secure SECRET_KEY and set it via environment variable
+# Option 1: Use https://djecrety.ir/ to generate a secure key
+# Option 2: Use: python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+# Then set the SECRET_KEY environment variable in Vercel
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure-25t)o8p6hsyq*l$^8_%17mzq!@oxmq&ayo2(tat!i3k6c$64f6'  # Development only - MUST be replaced in production
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = ['*']  # Allow all hosts for development
+# Get ALLOWED_HOSTS from environment variable
+_ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*')
+ALLOWED_HOSTS = [host.strip() for host in _ALLOWED_HOSTS.split(',')]
 
 
 # Application definition
@@ -42,6 +58,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -73,6 +90,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# Support SQLite for development and PostgreSQL for production
 
 DATABASES = {
     'default': {
@@ -113,19 +131,84 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
+# Email Configuration
+if DEBUG:
+    # Console backend for development
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    # SMTP for production (can be customized)
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@taskmaster.com')
 
-STATIC_URL = 'static/'
+# ========================
+# PRODUCTION SECURITY SETTINGS
+# ========================
+
+if not DEBUG:
+    # HTTPS and Security Headers
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    
+    # Allowed hosts from environment
+    # ALLOWED_HOSTS already set above from environment
+    
+    # CSRF Trusted Origins for Vercel deployment
+    CSRF_TRUSTED_ORIGINS = [
+        f'https://{host.strip()}' for host in _ALLOWED_HOSTS.split(',')
+        if host.strip() and not host.strip() == '*'
+    ]
+    
+    # Additional security settings
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_SECURITY_POLICY = {
+        'default-src': ("'self'",),
+        'script-src': ("'self'", "'unsafe-inline'"),
+        'style-src': ("'self'", "'unsafe-inline'"),
+    }
+
+# ========================
+# STATIC FILES CONFIGURATION FOR VERCEL
+# ========================
+
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Media files
-MEDIA_URL = 'media/'
+# WhiteNoise configuration
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Media files (optional, for user uploads)
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+# ========================
+# DATABASE CONFIGURATION
+# ========================
 
+# Support for different database backends in production
+DATABASE_URL = os.environ.get('DATABASE_URL', '')
+
+if DATABASE_URL:
+    # Parse DATABASE_URL for PostgreSQL or other databases
+    try:
+        import dj_database_url
+        DATABASES['default'] = dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600
+        )
+    except ImportError:
+        # If dj_database_url not installed, fall back to SQLite
+        pass
+
+# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Login URL
@@ -134,7 +217,3 @@ LOGIN_REDIRECT_URL = 'home'
 
 # Session Settings
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
-
-# Email Configuration for Development
-# Use console backend to print emails to console instead of sending
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

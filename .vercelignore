@@ -1,0 +1,47 @@
+# Vercel ignore file - files not needed for deployment
+
+# Version Control
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+.Python
+env/
+venv/
+*.pyc
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+*.log
+local_settings.py
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Development
+.env
+.env.local
+node_modules/
+
+# Documentation (optional)
+docs/
+README.md
+
+# Test files
+test_*.py
+verify_*.py
+.pytest_cache/

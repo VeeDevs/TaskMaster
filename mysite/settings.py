@@ -27,12 +27,17 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-25t)o8p6hsyq*l$^8_%17
 # Default to False for production safety
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-# Dynamic ALLOWED_HOSTS for production
-ALLOWED_HOSTS = ['*']
-# Also accept environment-specific hosts
+# Dynamic ALLOWED_HOSTS for production (works with Vercel domains)
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '*.vercel.app',
+    'taskmaster.vercel.app',
+]
+# Add environment-specific hosts
 env_hosts = os.environ.get('ALLOWED_HOSTS', '')
 if env_hosts:
-    ALLOWED_HOSTS = env_hosts.split(',') + ALLOWED_HOSTS
+    ALLOWED_HOSTS.extend(env_hosts.split(','))
 
 
 # Application definition
@@ -80,8 +85,8 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 # Security Settings for Production
 CSRF_TRUSTED_ORIGINS = [
-    'https://*.onrender.com',
-    'https://onrender.com',
+    'https://*.vercel.app',
+    'https://taskmaster.vercel.app',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]

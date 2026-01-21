@@ -23,10 +23,11 @@ Your files are already configured:
 
 3. **Configure the Service**
    - Name: `taskmaster`
-   - Runtime: `Python`
-   - Build Command: `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate`
-   - Start Command: `gunicorn mysite.wsgi:application`
+   - Runtime: `Python 3.9`
+   - Build Command: `pip install --no-cache-dir -r requirements.txt && python manage.py collectstatic --noinput`
+   - Start Command: `gunicorn --workers 3 --worker-class sync --max-requests 1000 --max-requests-jitter 50 mysite.wsgi:application`
    - Instance Type: `Free`
+   - **Important**: The Procfile includes a release command that runs migrations automatically before the web service starts
 
 4. **Add Environment Variables**
    Click "Advanced" and add these variables:

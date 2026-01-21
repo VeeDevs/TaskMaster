@@ -9,8 +9,5 @@ pip install --no-cache-dir -r requirements.txt
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
-# Run migrations
-echo "Running database migrations..."
-python manage.py migrate
-
 echo "Build completed successfully!"
+echo "Migrations will run during release phase on Render..."

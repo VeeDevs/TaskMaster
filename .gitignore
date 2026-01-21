@@ -51,21 +51,6 @@ htmlcov/
 # Development/Setup files
 setup.bat
 setup.sh
-build.sh
-deploy.sh
-run_migrations.py
-run_all_tests.py
-run_detailed_tests.py
-test_app_complete.py
-test_full_user_flow.py
-test_functionality.py
-test_login.py
-test_signal.py
-verify_login_fixed.py
-verify_production.py
-debug_login.py
-
-# Documentation files (development)
 CHECKLIST.md
 COMPLETE_README.md
 DEVELOPMENT_GUIDE.md
@@ -73,23 +58,11 @@ GETTING_STARTED.md
 IMPLEMENTATION_SUMMARY.md
 LOGIN_FIXES.md
 STATUS_REPORT.md
-DEPLOYMENT_CHECKLIST.md
-MOBILE_DEPLOYMENT.md
-PRODUCTION_DEBUG.md
-RENDER_DEPLOYMENT.md
-VERCEL_DEPLOYMENT.md
-BUILD_VERIFICATION.md
-FINAL_VALIDATION_REPORT.md
-PRODUCTION_READY.md
-PROJECT_COMPLETE.md
-QUICK_REFERENCE.md
 
 # Configuration files (development)
 pyrightconfig.json
 .pylintrc
 pytest.ini
-render.yaml
-Procfile
 
 # OS files
 .DS_Store

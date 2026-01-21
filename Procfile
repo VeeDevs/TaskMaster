@@ -1,2 +1,2 @@
-release: python manage.py migrate --noinput
-web: gunicorn --workers 3 --worker-class sync --max-requests 1000 --max-requests-jitter 50 mysite.wsgi:application
+release: python manage.py migrate --noinput && python manage.py check
+web: gunicorn mysite.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --worker-class sync --timeout 60

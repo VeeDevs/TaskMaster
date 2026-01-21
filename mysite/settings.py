@@ -24,13 +24,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-25t)o8p6hsyq*l$^8_%17mzq!@oxmq&ayo2(tat!i3k6c$64f6')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+# Default to False for production safety
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # Dynamic ALLOWED_HOSTS for production
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
-# Add render domain and wildcard for render subdomains
-if 'onrender.com' not in str(ALLOWED_HOSTS):
-    ALLOWED_HOSTS.extend(['*.onrender.com', 'onrender.com', 'taskmaster-smv8.onrender.com'])
+ALLOWED_HOSTS = ['*']
+# Also accept environment-specific hosts
+env_hosts = os.environ.get('ALLOWED_HOSTS', '')
+if env_hosts:
+    ALLOWED_HOSTS = env_hosts.split(',') + ALLOWED_HOSTS
 
 
 # Application definition
@@ -77,14 +79,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
 # Security Settings for Production
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000').split(',')
-# Add render domain to CSRF trusted origins
-if 'onrender.com' not in str(CSRF_TRUSTED_ORIGINS):
-    CSRF_TRUSTED_ORIGINS.extend([
-        'https://*.onrender.com',
-        'https://onrender.com',
-        'https://taskmaster-smv8.onrender.com'
-    ])
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+    'https://onrender.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+# Add environment-specific origins
+env_origins = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+if env_origins:
+    CSRF_TRUSTED_ORIGINS.extend(env_origins.split(','))
 SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'False') == 'True'
 SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'False') == 'True'
 CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', 'False') == 'True'

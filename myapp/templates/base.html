@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TaskMaster - Manage your tasks efficiently">
+    <meta name="theme-color" content="#6366f1">
+    <title>{% block title %}TaskMaster - Manage Your Tasks{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="{% url 'home' %}" class="logo">
+                <span>📋</span>
+                <span>TaskMaster</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'task_list' %}">My Tasks</a></li>
+                        <li><a href="{% url 'assigned_tasks' %}">Assigned to Me</a></li>
+                        <li><a href="{% url 'task_create' %}">Create Task</a></li>
+                        <li><a href="{% url 'profile' username=user.username %}">Profile</a></li>
+                        <li><a href="{% url 'logout' %}">Logout</a></li>
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Login</a></li>
+                        <li><a href="{% url 'register' %}">Register</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024-2026 TaskMaster. All rights reserved. Manage your tasks efficiently and stay productive.</p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

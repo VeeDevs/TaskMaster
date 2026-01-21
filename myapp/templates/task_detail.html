@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ task.title }} - TaskMaster{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>{{ task.title }}</h1>
+    <div style="display: flex; gap: 1rem;">
+        <a href="{% url 'task_update' task.pk %}" class="btn btn-primary">Edit</a>
+        <a href="{% url 'task_delete' task.pk %}" class="btn btn-danger">Delete</a>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h3 style="margin: 0;">📋 Task Details</h3>
+    </div>
+    <div class="card-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+            <div>
+                <p style="color: var(--text-light); font-size: 0.875rem; margin-bottom: 0.5rem;">Status</p>
+                <span class="badge {% if task.status == 'done' %}badge-success{% elif task.status == 'in_progress' %}badge-info{% elif task.status == 'review' %}badge-warning{% endif %}">
+                    {{ task.get_status_display }}
+                </span>
+            </div>
+            <div>
+                <p style="color: var(--text-light); font-size: 0.875rem; margin-bottom: 0.5rem;">Priority</p>
+                <span class="badge {% if task.priority == 'urgent' %}badge-danger{% elif task.priority == 'high' %}badge-warning{% elif task.priority == 'medium' %}badge-info{% else %}badge-primary{% endif %}">
+                    {{ task.get_priority_display }}
+                </span>
+            </div>
+            {% if task.due_date %}
+            <div>
+                <p style="color: var(--text-light); font-size: 0.875rem; margin-bottom: 0.5rem;">Due Date</p>
+                <p style="font-weight: 600;">{{ task.due_date|date:"M d, Y" }}</p>
+            </div>
+            {% endif %}
+            <div>
+                <p style="color: var(--text-light); font-size: 0.875rem; margin-bottom: 0.5rem;">Owner</p>
+                <p style="font-weight: 600;">{{ task.owner.get_full_name|default:task.owner.username }}</p>
+            </div>
+            <div>
+                <p style="color: var(--text-light); font-size: 0.875rem; margin-bottom: 0.5rem;">Assigned To</p>
+                <p style="font-weight: 600;">{% if task.assignee %}{{ task.assignee.get_full_name|default:task.assignee.username }}{% else %}<span style="color: var(--text-light);">Unassigned</span>{% endif %}</p>
+            </div>
+        </div>
+
+        {% if task.description %}
+        <div style="margin-top: 2rem; padding: 1.5rem; background-color: var(--light-bg); border-radius: var(--radius-md);">
+            <h4>📝 Description</h4>
+            <p>{{ task.description }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Comments Section -->
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h3 style="margin: 0;">💬 Comments ({{ comments.count }})</h3>
+    </div>
+    <div class="card-body">
+        {% if comments %}
+            {% for comment in comments %}
+                <div class="comment">
+                    <div class="comment-author">{{ comment.author.get_full_name|default:comment.author.username }}</div>
+                    <div class="comment-meta">{{ comment.created_at|date:"M d, Y \a\t g:i A" }}</div>
+                    <div class="comment-content">{{ comment.content }}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: var(--text-light); text-align: center;">No comments yet. Be the first to comment!</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add Comment -->
+<div class="card">
+    <div class="card-header">
+        <h3 style="margin: 0;">➕ Add Comment</h3>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.content }}
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary">Post Comment</button>
+                <a href="{% url 'task_list' %}" class="btn btn-secondary">Back to Tasks</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

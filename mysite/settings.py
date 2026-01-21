@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-25t)o8p6hsyq*l$^8_%17mzq!@oxmq&ayo2(tat!i3k6c$64f6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']  # Allow all hosts for development
 
 
 # Application definition
@@ -117,8 +117,24 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Media files
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Login URL
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+
+# Session Settings
+SESSION_COOKIE_AGE = 1209600  # 2 weeks
+
+# Email Configuration for Development
+# Use console backend to print emails to console instead of sending
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

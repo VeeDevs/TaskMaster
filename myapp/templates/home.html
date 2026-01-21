@@ -1,29 +1,58 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Home - My Band Site</title>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
-</head>
-<body>
-    <header>
-        <h1>Welcome to My Band Site</h1>
-        <nav>
-            <ul>
-                <li><a href="{% url 'home' %}">Home</a></li>
-                <li><a href="{% url 'band_list' %}">Band List</a></li>
-                <li><a href="{% url 'album_list' %}">Album List</a></li>
-                <li><a href="{% url 'login' %}">Login</a></li>
-                <li><a href="{% url 'logout' %}">Logout</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <h2>Featured Bands and Albums</h2>
-        <p>Explore the latest bands and albums on our site.</p>
-    </main>
-    <footer>
-        <p>&copy; 2024 My Band Site</p>
-    </footer>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - TaskMaster{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+    <h1>Welcome, {{ user.first_name|default:user.username }}! 👋</h1>
+    <p style="font-size: 1.125rem; color: var(--text-secondary); margin-bottom: 2rem;">
+        Here's an overview of your tasks and activities.
+    </p>
+    
+    <div class="grid grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h3>📝 My Tasks</h3>
+            </div>
+            <div class="card-body">
+                <p>You have <strong>{{ tasks_count }}</strong> task{{ tasks_count|pluralize }}.</p>
+                <a href="{% url 'task_list' %}" class="btn btn-primary" style="margin-top: 1rem;">View All Tasks</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>🎯 Assigned to Me</h3>
+            </div>
+            <div class="card-body">
+                <p>You have <strong>{{ assigned_count }}</strong> assigned task{{ assigned_count|pluralize }}.</p>
+                <a href="{% url 'assigned_tasks' %}" class="btn btn-primary" style="margin-top: 1rem;">View Assigned Tasks</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top: 2rem;">
+        <div class="card-header">
+            <h3>⚡ Quick Actions</h3>
+        </div>
+        <div class="card-body">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="{% url 'task_create' %}" class="btn btn-primary">Create New Task</a>
+                <a href="{% url 'edit_profile' %}" class="btn btn-secondary">Edit Profile</a>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div style="text-align: center; padding: 4rem 2rem;">
+        <h1 style="font-size: 3rem; margin-bottom: 1rem;">📋 Welcome to TaskMaster</h1>
+        <p style="font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 2rem;">
+            Manage your tasks efficiently and stay organized and productive.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+            <a href="{% url 'register' %}" class="btn btn-secondary">Register</a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

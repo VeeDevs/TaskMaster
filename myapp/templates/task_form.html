@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if task %}{{ task.title }}{% else %}Create Task{% endif %} - TaskMaster{% endblock %}
+
+{% block content %}
+<h1>{% if task %}✏️ Edit Task{% else %}➕ Create New Task{% endif %}</h1>
+
+<div style="max-width: 600px; margin: 2rem auto;">
+    <div class="card">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_title" class="required">Title</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="alert alert-error" style="margin-top: 0.5rem;">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_description">Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="alert alert-error" style="margin-top: 0.5rem;">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                <div class="form-group" style="margin: 0;">
+                    <label for="id_priority">Priority</label>
+                    {{ form.priority }}
+                </div>
+
+                <div class="form-group" style="margin: 0;">
+                    <label for="id_status">Status</label>
+                    {{ form.status }}
+                </div>
+
+                <div class="form-group" style="margin: 0;">
+                    <label for="id_due_date">Due Date</label>
+                    {{ form.due_date }}
+                </div>
+
+                <div class="form-group" style="margin: 0;">
+                    <label for="id_assignee">Assign To</label>
+                    {{ form.assignee }}
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary">{% if task %}Update Task{% else %}Create Task{% endif %}</button>
+                <a href="{% url 'task_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

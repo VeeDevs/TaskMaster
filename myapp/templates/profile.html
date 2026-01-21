@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ profile.user.username }}'s Profile - TaskMaster{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    {% if profile.avatar %}
+        <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}" class="avatar">
+    {% else %}
+        <div class="avatar" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: white;">
+            {{ profile.user.username|first|upper }}
+        </div>
+    {% endif %}
+</div>
+
+<div class="profile-info">
+    <div style="text-align: center;">
+        <h1 style="margin-bottom: 0.5rem;">{{ profile.user.get_full_name|default:profile.user.username }}</h1>
+        <p style="color: var(--text-light); font-size: 1.125rem;">@{{ profile.user.username }}</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin: 2rem 0;">
+        <div style="text-align: center;">
+            <p style="color: var(--text-light); font-size: 0.875rem; margin-bottom: 0.5rem;">Email</p>
+            <p style="font-weight: 600;">{{ profile.user.email }}</p>
+        </div>
+        <div style="text-align: center;">
+            <p style="color: var(--text-light); font-size: 0.875rem; margin-bottom: 0.5rem;">Member Since</p>
+            <p style="font-weight: 600;">{{ profile.created_at|date:"M d, Y" }}</p>
+        </div>
+    </div>
+
+    {% if profile.bio %}
+    <div style="background-color: var(--light-bg); padding: 1.5rem; border-radius: var(--radius-lg); margin: 2rem 0;">
+        <h3 style="margin-top: 0;">📝 About</h3>
+        <p>{{ profile.bio }}</p>
+    </div>
+    {% endif %}
+
+    {% if user == profile.user %}
+    <div style="text-align: center; margin-top: 2rem;">
+        <a href="{% url 'edit_profile' %}" class="btn btn-primary">✏️ Edit Profile</a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- User's Tasks -->
+<div class="card" style="margin-top: 3rem;">
+    <div class="card-header">
+        <h3 style="margin: 0;">📋 Tasks Created ({{ tasks.count }})</h3>
+    </div>
+
+    <div class="card-body">
+        {% if tasks %}
+            {% for task in tasks|slice:":10" %}
+                <div class="task-item">
+                    <div class="task-content">
+                        <a href="{% url 'task_detail' task.pk %}" class="task-title">{{ task.title }}</a>
+                        <div class="task-meta">
+                            <span class="badge {% if task.status == 'done' %}badge-success{% elif task.status == 'in_progress' %}badge-info{% elif task.status == 'review' %}badge-warning{% endif %}">
+                                {{ task.get_status_display }}
+                            </span>
+                            <span class="badge {% if task.priority == 'urgent' %}badge-danger{% elif task.priority == 'high' %}badge-warning{% elif task.priority == 'medium' %}badge-info{% else %}badge-primary{% endif %}">
+                                {{ task.get_priority_display }}
+                            </span>
+                        </div>
+                    </div>
+                    <a href="{% url 'task_detail' task.pk %}" class="btn btn-small btn-secondary">View</a>
+                </div>
+            {% endfor %}
+            
+            {% if tasks.count > 10 %}
+                <p style="text-align: center; color: var(--text-light); margin-top: 1rem;">And {{ tasks.count|add:"-10" }} more...</p>
+            {% endif %}
+        {% else %}
+            <p style="text-align: center; color: var(--text-light);">No tasks created yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

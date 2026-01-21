@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Tasks - TaskMaster{% endblock %}
+
+{% block content %}
+<h1>📝 My Tasks</h1>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h3 style="margin: 0;">Filter & Search</h3>
+    </div>
+    <div class="card-body">
+        <form method="get">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                <input type="text" name="q" placeholder="Search tasks..." value="{{ request.GET.q }}" class="form-control">
+                
+                <select name="status">
+                    <option value="">All Statuses</option>
+                    {% for status_code, status_label in statuses %}
+                        <option value="{{ status_code }}" {% if request.GET.status == status_code %}selected{% endif %}>
+                            {{ status_label }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <select name="priority">
+                    <option value="">All Priorities</option>
+                    {% for priority_code, priority_label in priorities %}
+                        <option value="{{ priority_code }}" {% if request.GET.priority == priority_code %}selected{% endif %}>
+                            {{ priority_label }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if tasks %}
+    <div>
+        {% for task in tasks %}
+            <div class="task-item">
+                <div class="task-content">
+                    <a href="{% url 'task_detail' task.pk %}" class="task-title">{{ task.title }}</a>
+                    {% if task.description %}
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">{{ task.description|truncatewords:20 }}</p>
+                    {% endif %}
+                    <div class="task-meta">
+                        <span class="badge {% if task.status == 'done' %}badge-success{% elif task.status == 'in_progress' %}badge-info{% elif task.status == 'review' %}badge-warning{% endif %}">
+                            {{ task.get_status_display }}
+                        </span>
+                        <span class="badge {% if task.priority == 'urgent' %}badge-danger{% elif task.priority == 'high' %}badge-warning{% elif task.priority == 'medium' %}badge-info{% else %}badge-primary{% endif %}">
+                            {{ task.get_priority_display }} Priority
+                        </span>
+                        {% if task.due_date %}
+                            <span style="font-size: 0.875rem; color: var(--text-secondary);">📅 Due: {{ task.due_date|date:"M d, Y" }}</span>
+                        {% endif %}
+                        {% if task.assignee %}
+                            <span style="font-size: 0.875rem; color: var(--text-secondary);">👤 {{ task.assignee.first_name|default:task.assignee.username }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="task-actions">
+                    <a href="{% url 'task_detail' task.pk %}" class="btn btn-small btn-secondary">View</a>
+                    <a href="{% url 'task_update' task.pk %}" class="btn btn-small btn-primary">Edit</a>
+                    <a href="{% url 'task_delete' task.pk %}" class="btn btn-small btn-danger">Delete</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card">
+        <div style="text-align: center; padding: 3rem 2rem;">
+            <p style="font-size: 1.125rem; color: var(--text-secondary); margin-bottom: 1rem;">No tasks found.</p>
+            <a href="{% url 'task_create' %}" class="btn btn-primary">Create Your First Task</a>
+        </div>
+    </div>
+{% endif %}
+
+<div style="margin-top: 2rem;">
+    <a href="{% url 'task_create' %}" class="btn btn-primary">➕ Create New Task</a>
+</div>
+{% endblock %}
